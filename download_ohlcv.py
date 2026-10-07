@@ -180,13 +180,7 @@ def rebuild_combined():
 
 
 # ---------- BigQuery ----------
-def bq_load(fetched, run_ts):
-    from google.cloud import bigquery
-
-    client = bigquery.Client()
-    project, dataset, table = BQ_TABLE.split(".")
-    staging = f"{project}.{dataset}.{table}_staging"
-
+def ensure_main_table(client):
     client.query(f"""
         CREATE TABLE IF NOT EXISTS `{BQ_TABLE}` (
           symbol STRING NOT NULL,
@@ -199,6 +193,16 @@ def bq_load(fetched, run_ts):
         PARTITION BY DATE_TRUNC(date, YEAR)
         CLUSTER BY symbol
     """).result()
+
+
+def bq_load(fetched, run_ts):
+    from google.cloud import bigquery
+
+    client = bigquery.Client()
+    project, dataset, table = BQ_TABLE.split(".")
+    staging = f"{project}.{dataset}.{table}_staging"
+
+    ensure_main_table(client)
 
     rows = [{
         "symbol": sym, "date": r["date"],
@@ -241,6 +245,85 @@ def bq_load(fetched, run_ts):
     affected = merge.num_dml_affected_rows or 0
     client.query(f"DROP TABLE IF EXISTS `{staging}`").result()
     return len(rows), affected
+
+
+def bq_tracking(tickers, log, run_ts):
+    """Refresh the symbol universe, append this run's per-symbol log, (re)create coverage views.
+
+    Tables/views in the same dataset as BQ_TABLE:
+      ohlcv_universe       symbol, priority, updated_at        (replaced each run from tickers.txt)
+      ohlcv_load_log       one row per symbol attempt per run  (append-only history of what was input)
+      ohlcv_coverage       VIEW: per symbol first/last date, days loaded vs expected, missing, status
+      ohlcv_missing_dates  VIEW: every (symbol, date) gap inside each symbol's loaded range
+    Views recompute on every query, so they are always current with no schedule.
+    """
+    from google.cloud import bigquery
+
+    client = bigquery.Client()
+    project, dataset, _ = BQ_TABLE.split(".")
+    ds = f"{project}.{dataset}"
+    ensure_main_table(client)
+
+    uni = [{"symbol": s, "priority": i + 1, "updated_at": run_ts} for i, s in enumerate(tickers)]
+    client.load_table_from_json(uni, f"{ds}.ohlcv_universe", job_config=bigquery.LoadJobConfig(
+        schema=[bigquery.SchemaField("symbol", "STRING"), bigquery.SchemaField("priority", "INT64"),
+                bigquery.SchemaField("updated_at", "TIMESTAMP")],
+        write_disposition="WRITE_TRUNCATE")).result()
+
+    if log:
+        rows = [{"run_utc": r["run_utc"], "symbol": r["symbol"], "status": r["status"],
+                 "rows": int(r["rows"]), "first_date": r["first_date"] or None,
+                 "last_date": r["last_date"] or None, "outputsize": r["outputsize"],
+                 "detail": (r["detail"] or "")[:500]} for r in log]
+        client.load_table_from_json(rows, f"{ds}.ohlcv_load_log", job_config=bigquery.LoadJobConfig(
+            schema=[bigquery.SchemaField("run_utc", "TIMESTAMP"), bigquery.SchemaField("symbol", "STRING"),
+                    bigquery.SchemaField("status", "STRING"), bigquery.SchemaField("rows", "INT64"),
+                    bigquery.SchemaField("first_date", "DATE"), bigquery.SchemaField("last_date", "DATE"),
+                    bigquery.SchemaField("outputsize", "STRING"), bigquery.SchemaField("detail", "STRING")],
+            write_disposition="WRITE_APPEND")).result()
+
+    client.query(f"""
+        CREATE OR REPLACE VIEW `{ds}.ohlcv_coverage` AS
+        WITH cal AS (SELECT DISTINCT date FROM `{BQ_TABLE}`),          -- trading calendar = any date any symbol has
+        latest AS (SELECT MAX(date) AS market_last_date FROM cal),
+        agg AS (
+          SELECT symbol, MIN(date) AS first_date, MAX(date) AS last_date,
+                 COUNT(*) AS days_loaded, MAX(loaded_at) AS last_loaded_at
+          FROM `{BQ_TABLE}` GROUP BY symbol),
+        expd AS (
+          SELECT a.symbol, COUNT(c.date) AS expected_days
+          FROM agg a JOIN cal c ON c.date BETWEEN a.first_date AND a.last_date
+          GROUP BY a.symbol)
+        SELECT
+          u.priority, u.symbol,
+          a.first_date, a.last_date,
+          a.days_loaded, e.expected_days,
+          e.expected_days - a.days_loaded AS missing_days,
+          DATE_DIFF(l.market_last_date, a.last_date, DAY) AS days_behind_latest,
+          a.last_loaded_at,
+          CASE
+            WHEN a.symbol IS NULL THEN 'NOT LOADED'
+            WHEN e.expected_days > a.days_loaded THEN 'GAPS'
+            WHEN a.last_date < l.market_last_date THEN 'BEHIND'
+            ELSE 'CURRENT'
+          END AS status
+        FROM `{ds}.ohlcv_universe` u
+        LEFT JOIN agg a USING (symbol)
+        LEFT JOIN expd e USING (symbol)
+        CROSS JOIN latest l
+    """).result()
+
+    client.query(f"""
+        CREATE OR REPLACE VIEW `{ds}.ohlcv_missing_dates` AS
+        WITH cal AS (SELECT DISTINCT date FROM `{BQ_TABLE}`),
+        rng AS (SELECT symbol, MIN(date) AS first_date, MAX(date) AS last_date FROM `{BQ_TABLE}` GROUP BY symbol)
+        SELECT r.symbol, c.date AS missing_date
+        FROM rng r
+        JOIN cal c ON c.date BETWEEN r.first_date AND r.last_date
+        LEFT JOIN `{BQ_TABLE}` t ON t.symbol = r.symbol AND t.date = c.date
+        WHERE t.symbol IS NULL
+    """).result()
+    print(f"BQ   tracking: universe={len(uni)} log_rows={len(log)} views=ohlcv_coverage,ohlcv_missing_dates")
 
 
 # ---------- main ----------
@@ -325,6 +408,8 @@ def main():
     if BQ_ENABLED and fetched:
         staged, merged = bq_load(fetched, run_ts)
         print(f"BQ   staged={staged} merged(inserted+updated)={merged} -> {BQ_TABLE}")
+    if BQ_ENABLED:
+        bq_tracking(tickers, log, run_ts)
 
     run = {"run_utc": run_ts, "landed": len(fetched), "failed": len(failed), "api_calls": calls,
            "stop_reason": stop_reason, "outputsize": outputsize, "full_fallback": fell_back,

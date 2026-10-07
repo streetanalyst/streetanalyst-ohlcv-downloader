@@ -75,3 +75,19 @@ Edit `tickers.txt` (order = priority). Cursor keeps its index; new symbols are p
 | Rotation, retry, CSV dedupe | Tested offline (13 simulated days, mocked API) |
 | BigQuery load/MERGE | Untested (needs `GCP_SA_KEY`) |
 | Live Alpha Vantage | Untested |
+
+## Coverage tracking (BigQuery, auto-updating)
+
+Refreshed every run; views recompute on every query (no schedule needed).
+
+| Object | Type | What it answers |
+|---|---|---|
+| `financial_data.ohlcv_coverage` | View | Per symbol: `first_date` → `last_date`, `days_loaded` vs `expected_days`, `missing_days`, `days_behind_latest`, `status` (NOT LOADED / GAPS / BEHIND / CURRENT) |
+| `financial_data.ohlcv_missing_dates` | View | Every `(symbol, missing_date)` gap inside a symbol's loaded range |
+| `financial_data.ohlcv_load_log` | Table (append) | Every symbol attempt per run: status, rows, first/last date, outputsize, error |
+| `financial_data.ohlcv_universe` | Table (replaced each run) | `tickers.txt` with priority order |
+
+```sql
+SELECT * FROM `besa-capital-financials.financial_data.ohlcv_coverage` ORDER BY priority;
+SELECT status, COUNT(*) FROM `besa-capital-financials.financial_data.ohlcv_coverage` GROUP BY status;
+```
