@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write   # keyless Google auth (Workload Identity Federation)
 
 concurrency:
   group: ohlcv
@@ -25,34 +26,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Check secrets shape (no values printed)
+      - name: Check Alpha Vantage secret (no value printed)
         env:
-          SA: ${{ secrets.GCP_SA_KEY }}
           AV: ${{ secrets.ALPHA_VANTAGE_KEY }}
         run: |
-          python3 - <<'EOF'
-          import json, os, sys
-          sa, av = os.environ.get("SA", ""), os.environ.get("AV", "")
-          s = sa.strip()
-          print(f"GCP_SA_KEY: length={len(sa)} starts_with_brace={s[:1]=='{'} ends_with_brace={s[-1:]=='}'}")
-          ok = True
-          try:
-              d = json.loads(s)
-              print(f"GCP_SA_KEY: valid JSON, type={d.get('type')}, has_private_key={'private_key' in d}, "
-                    f"client_email_domain={d.get('client_email','').split('@')[-1]}")
-              ok = d.get("type") == "service_account" and "private_key" in d
-          except Exception as e:
-              print(f"GCP_SA_KEY: NOT valid JSON ({type(e).__name__}) -> paste the whole block from {{ to }}")
-              ok = False
-          print(f"ALPHA_VANTAGE_KEY: length={len(av.strip())} alnum={av.strip().isalnum()}")
-          if not av.strip():
-              ok = False
-          sys.exit(0 if ok else 1)
-          EOF
+          python3 -c "import os,sys;k=os.environ.get('AV','').strip();print(f'ALPHA_VANTAGE_KEY: length={len(k)} alnum={k.isalnum()}');sys.exit(0 if k else 1)"
 
       - uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          workload_identity_provider: projects/204486643890/locations/global/workloadIdentityPools/github/providers/ohlcv-repo
+          service_account: ohlcv-loader@besa-capital-financials.iam.gserviceaccount.com
 
       - uses: actions/setup-python@v5
         with:
