@@ -336,6 +336,14 @@ def bq_tracking(tickers, log, run_ts):
         WHERE t.symbol IS NULL
     """).result()
     print(f"BQ   tracking: universe={len(uni)} log_rows={len(log)} views=ohlcv_coverage,ohlcv_missing_dates")
+    q = lambda sql: [dict(r) for r in client.query(sql).result()]
+    v = []
+    v += [f"daily_ohlcv: {r}" for r in q(f"SELECT COUNT(*) rows_total, COUNT(DISTINCT symbol) symbols, MIN(trade_date) min_date, MAX(trade_date) max_date FROM `{BQ_TABLE}`")]
+    v += [f"duplicates (symbol,trade_date): {q(f'SELECT COUNT(*) n FROM (SELECT symbol, trade_date FROM `{BQ_TABLE}` GROUP BY 1,2 HAVING COUNT(*)>1)')[0]['n']}"]
+    v += [f"coverage {r['status']}: {r['n']}" for r in q(f"SELECT status, COUNT(*) n FROM `{ds}.ohlcv_coverage` GROUP BY 1 ORDER BY 1")]
+    v += ["per symbol: " + ", ".join(f"{r['symbol']} {r['first_date']}..{r['last_date']} ({r['days_loaded']}d)" for r in q(f"SELECT symbol, first_date, last_date, days_loaded FROM `{ds}.ohlcv_coverage` WHERE days_loaded IS NOT NULL ORDER BY priority"))]
+    (ROOT / "state" / "bq_verify.txt").write_text(run_ts + "\n" + "\n".join(v) + "\n")
+    print("\n".join(v))
 
 
 # ---------- main ----------
