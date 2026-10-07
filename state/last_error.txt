@@ -1,52 +1,52 @@
-2026-10-07T17:19:24.873458+00:00
+2026-10-07T17:20:18.062180+00:00
 Traceback (most recent call last):
-  File "/home/runner/work/streetanalyst-ohlcv-downloader/streetanalyst-ohlcv-downloader/download_ohlcv.py", line 453, in <module>
+  File "/home/runner/work/streetanalyst-ohlcv-downloader/streetanalyst-ohlcv-downloader/download_ohlcv.py", line 467, in <module>
     main()
-  File "/home/runner/work/streetanalyst-ohlcv-downloader/streetanalyst-ohlcv-downloader/download_ohlcv.py", line 345, in main
+  File "/home/runner/work/streetanalyst-ohlcv-downloader/streetanalyst-ohlcv-downloader/download_ohlcv.py", line 359, in main
     staged, merged = bq_load(ts)
                      ^^^^^^^^^^^
   File "/home/runner/work/streetanalyst-ohlcv-downloader/streetanalyst-ohlcv-downloader/download_ohlcv.py", line 256, in bq_load
     merge.result()
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/google/cloud/bigquery/job/query.py", line 1797, in result
+  File "/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/google/cloud/bigquery/job/query.py", line 1797, in result
     while not is_job_done():
               ^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 295, in retry_wrapped_func
+  File "/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 295, in retry_wrapped_func
     return retry_target(
            ^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 157, in retry_target
+  File "/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 157, in retry_target
     next_sleep = _retry_error_helper(
                  ^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/google/api_core/retry/retry_base.py", line 215, in _retry_error_helper
+  File "/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/google/api_core/retry/retry_base.py", line 215, in _retry_error_helper
     raise final_exc from source_exc
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 148, in retry_target
+  File "/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 148, in retry_target
     result = target()
              ^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/google/cloud/bigquery/job/query.py", line 1766, in is_job_done
+  File "/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/google/cloud/bigquery/job/query.py", line 1766, in is_job_done
     self._reload_query_results(retry=retry, **reload_query_results_kwargs)
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/google/cloud/bigquery/job/query.py", line 1558, in _reload_query_results
+  File "/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/google/cloud/bigquery/job/query.py", line 1558, in _reload_query_results
     self._query_results = self._client._get_query_results(
                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/google/cloud/bigquery/client.py", line 2167, in _get_query_results
+  File "/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/google/cloud/bigquery/client.py", line 2167, in _get_query_results
     resource = self._call_api(
                ^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/google/cloud/bigquery/client.py", line 915, in _call_api
+  File "/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/google/cloud/bigquery/client.py", line 915, in _call_api
     return call()
            ^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 295, in retry_wrapped_func
+  File "/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 295, in retry_wrapped_func
     return retry_target(
            ^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 157, in retry_target
+  File "/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 157, in retry_target
     next_sleep = _retry_error_helper(
                  ^^^^^^^^^^^^^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/google/api_core/retry/retry_base.py", line 215, in _retry_error_helper
+  File "/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/google/api_core/retry/retry_base.py", line 215, in _retry_error_helper
     raise final_exc from source_exc
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 148, in retry_target
+  File "/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 148, in retry_target
     result = target()
              ^^^^^^^^
-  File "/opt/hostedtoolcache/Python/3.12.15/x64/lib/python3.12/site-packages/google/cloud/_http/__init__.py", line 509, in api_request
+  File "/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/site-packages/google/cloud/_http/__init__.py", line 509, in api_request
     raise exceptions.from_http_response(response)
-google.api_core.exceptions.BadRequest: 400 GET https://bigquery.googleapis.com/bigquery/v2/projects/besa-capital-financials/queries/cc49367d-284b-44da-972a-1e8c6b99b712?maxResults=0&location=US&prettyPrint=false: Name date not found inside T at [8:38]
+google.api_core.exceptions.BadRequest: 400 GET https://bigquery.googleapis.com/bigquery/v2/projects/besa-capital-financials/queries/02f7060d-b0ff-4fb9-90ae-801ab8a551bc?maxResults=0&location=US&prettyPrint=false: Name date not found inside T at [8:38]
 
 Location: US
-Job ID: cc49367d-284b-44da-972a-1e8c6b99b712
+Job ID: 02f7060d-b0ff-4fb9-90ae-801ab8a551bc
 
