@@ -210,7 +210,7 @@ def all_csv_rows():
 def bq_load(run_ts):
     from google.cloud import bigquery
 
-    client = bigquery.Client()
+    client = bigquery.Client(project=BQ_TABLE.split('.')[0])
     project, dataset, table = BQ_TABLE.split(".")
     staging = f"{project}.{dataset}.{table}_staging"
 
@@ -271,7 +271,7 @@ def bq_tracking(tickers, log, run_ts):
     """
     from google.cloud import bigquery
 
-    client = bigquery.Client()
+    client = bigquery.Client(project=BQ_TABLE.split('.')[0])
     project, dataset, _ = BQ_TABLE.split(".")
     ds = f"{project}.{dataset}"
     ensure_main_table(client)
@@ -449,4 +449,18 @@ def main():
         sys.exit(1)
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+        (ROOT / "state" / "last_error.txt").write_text("OK " + dt.datetime.now(dt.timezone.utc).isoformat() + "\n")
+    except SystemExit:
+        raise
+    except Exception:
+        import traceback
+        tb = traceback.format_exc()
+        k = os.environ.get("ALPHA_VANTAGE_KEY")
+        if k:
+            tb = tb.replace(k, "***")
+        (ROOT / "state").mkdir(exist_ok=True)
+        (ROOT / "state" / "last_error.txt").write_text(dt.datetime.now(dt.timezone.utc).isoformat() + "\n" + tb)
+        print(tb)
+        sys.exit(1)
