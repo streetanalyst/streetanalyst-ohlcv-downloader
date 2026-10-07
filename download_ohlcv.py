@@ -9,7 +9,7 @@ Each run:
   4. Probe mode: keeps going past BATCH_SIZE until Alpha Vantage returns its
      daily-limit message (or MAX_PER_RUN), so each run records how many land.
   5. Writes data/<SYMBOL>.csv, data/combined_ohlcv.csv, data/run_log.csv.
-  6. Loads rows to BigQuery staging, MERGEs into daily_ohlcv on (symbol, date)
+  6. Loads rows to BigQuery staging, MERGEs into daily_ohlcv on (symbol, trade_date)
      -> no duplicates.
   7. Advances the cursor; appends {landed, api_calls, stop_reason, ...} to
      state/cursor.json "history" (last 30 runs).
@@ -185,14 +185,14 @@ def ensure_main_table(client):
     client.query(f"""
         CREATE TABLE IF NOT EXISTS `{BQ_TABLE}` (
           symbol STRING NOT NULL,
-          date DATE NOT NULL,
+          trade_date DATE NOT NULL,
           open FLOAT64, high FLOAT64, low FLOAT64, close FLOAT64,
           volume INT64,
           source STRING,
           loaded_at TIMESTAMP
         )
-        PARTITION BY DATE_TRUNC(date, YEAR)
-        CLUSTER BY symbol
+        PARTITION BY DATE_TRUNC(trade_date, MONTH)
+        CLUSTER BY symbol, trade_date
     """).result()
 
 
@@ -217,7 +217,7 @@ def bq_load(run_ts):
     ensure_main_table(client)
 
     rows = [{
-        "symbol": sym, "date": r["date"],
+        "symbol": sym, "trade_date": r["date"],
         "open": float(r["open"]), "high": float(r["high"]),
         "low": float(r["low"]), "close": float(r["close"]),
         "volume": int(float(r["volume"])),
@@ -227,7 +227,7 @@ def bq_load(run_ts):
         return 0, 0
 
     schema = [
-        bigquery.SchemaField("symbol", "STRING"), bigquery.SchemaField("date", "DATE"),
+        bigquery.SchemaField("symbol", "STRING"), bigquery.SchemaField("trade_date", "DATE"),
         bigquery.SchemaField("open", "FLOAT64"), bigquery.SchemaField("high", "FLOAT64"),
         bigquery.SchemaField("low", "FLOAT64"), bigquery.SchemaField("close", "FLOAT64"),
         bigquery.SchemaField("volume", "INT64"), bigquery.SchemaField("source", "STRING"),
@@ -242,16 +242,16 @@ def bq_load(run_ts):
         USING (
           SELECT * FROM `{staging}`
           WHERE TRUE
-          QUALIFY ROW_NUMBER() OVER (PARTITION BY symbol, date ORDER BY loaded_at DESC) = 1
+          QUALIFY ROW_NUMBER() OVER (PARTITION BY symbol, trade_date ORDER BY loaded_at DESC) = 1
         ) S
-        ON T.symbol = S.symbol AND T.date = S.date
+        ON T.symbol = S.symbol AND T.trade_date = S.trade_date
         WHEN MATCHED AND (T.open != S.open OR T.high != S.high OR T.low != S.low
                           OR T.close != S.close OR T.volume != S.volume) THEN
           UPDATE SET open = S.open, high = S.high, low = S.low, close = S.close,
                      volume = S.volume, source = S.source, loaded_at = S.loaded_at
         WHEN NOT MATCHED THEN
-          INSERT (symbol, date, open, high, low, close, volume, source, loaded_at)
-          VALUES (S.symbol, S.date, S.open, S.high, S.low, S.close, S.volume, S.source, S.loaded_at)
+          INSERT (symbol, trade_date, open, high, low, close, volume, source, loaded_at)
+          VALUES (S.symbol, S.trade_date, S.open, S.high, S.low, S.close, S.volume, S.source, S.loaded_at)
     """)
     merge.result()
     affected = merge.num_dml_affected_rows or 0
@@ -296,10 +296,10 @@ def bq_tracking(tickers, log, run_ts):
 
     client.query(f"""
         CREATE OR REPLACE VIEW `{ds}.ohlcv_coverage` AS
-        WITH cal AS (SELECT DISTINCT date FROM `{BQ_TABLE}`),          -- trading calendar = any date any symbol has
+        WITH cal AS (SELECT DISTINCT trade_date AS date FROM `{BQ_TABLE}`),  -- trading calendar = any date any symbol has
         latest AS (SELECT MAX(date) AS market_last_date FROM cal),
         agg AS (
-          SELECT symbol, MIN(date) AS first_date, MAX(date) AS last_date,
+          SELECT symbol, MIN(trade_date) AS first_date, MAX(trade_date) AS last_date,
                  COUNT(*) AS days_loaded, MAX(loaded_at) AS last_loaded_at
           FROM `{BQ_TABLE}` GROUP BY symbol),
         expd AS (
@@ -327,12 +327,12 @@ def bq_tracking(tickers, log, run_ts):
 
     client.query(f"""
         CREATE OR REPLACE VIEW `{ds}.ohlcv_missing_dates` AS
-        WITH cal AS (SELECT DISTINCT date FROM `{BQ_TABLE}`),
-        rng AS (SELECT symbol, MIN(date) AS first_date, MAX(date) AS last_date FROM `{BQ_TABLE}` GROUP BY symbol)
+        WITH cal AS (SELECT DISTINCT trade_date AS date FROM `{BQ_TABLE}`),
+        rng AS (SELECT symbol, MIN(trade_date) AS first_date, MAX(trade_date) AS last_date FROM `{BQ_TABLE}` GROUP BY symbol)
         SELECT r.symbol, c.date AS missing_date
         FROM rng r
         JOIN cal c ON c.date BETWEEN r.first_date AND r.last_date
-        LEFT JOIN `{BQ_TABLE}` t ON t.symbol = r.symbol AND t.date = c.date
+        LEFT JOIN `{BQ_TABLE}` t ON t.symbol = r.symbol AND t.trade_date = c.date
         WHERE t.symbol IS NULL
     """).result()
     print(f"BQ   tracking: universe={len(uni)} log_rows={len(log)} views=ohlcv_coverage,ohlcv_missing_dates")

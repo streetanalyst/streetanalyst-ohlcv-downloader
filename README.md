@@ -1,6 +1,6 @@
 # streetanalyst-ohlcv-downloader
 
-Alpha Vantage `TIME_SERIES_DAILY` → CSV + BigQuery `daily_ohlcv`, once a day, target 20 symbols then probes 21, 22, … until Alpha Vantage's daily limit, run by GitHub Actions. History accumulates with no duplicates (`MERGE` on `symbol, date`).
+Alpha Vantage `TIME_SERIES_DAILY` → CSV + BigQuery `daily_ohlcv`, once a day, target 20 symbols then probes 21, 22, … until Alpha Vantage's daily limit, run by GitHub Actions. History accumulates with no duplicates (`MERGE` on `symbol, trade_date`).
 
 ## Files
 
@@ -42,7 +42,7 @@ Partitioned by year, clustered by symbol. Each run: load to `daily_ohlcv_staging
 
 Dedupe check:
 ```sql
-SELECT symbol, date, COUNT(*) c FROM `besa-capital-financials.financial_data.daily_ohlcv`
+SELECT symbol, trade_date, COUNT(*) c FROM `besa-capital-financials.financial_data.daily_ohlcv`
 GROUP BY 1,2 HAVING c > 1
 ```
 Verification: 0 rows.
