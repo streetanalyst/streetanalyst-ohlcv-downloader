@@ -1,0 +1,26 @@
+name: Archive load (one-time)
+
+on:
+  push:
+    paths: ["archive/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  load:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/204486643890/locations/global/workloadIdentityPools/github/providers/ohlcv-repo
+          service_account: ohlcv-loader@besa-capital-financials.iam.gserviceaccount.com
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet google-cloud-bigquery
+      - run: python archive/load_archive.py
