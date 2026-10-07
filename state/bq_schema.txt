@@ -6,7 +6,7 @@
 ## besa-capital-financials:financial_data.company_identity rows=5 type=TABLE created=2026-10-01 21:26:07.317000+00:00
 ## besa-capital-financials:financial_data.concept_mapping rows=670 type=TABLE created=2026-09-23 04:16:45.237000+00:00
 ## besa-capital-financials:financial_data.concept_mapping_log rows=3394 type=TABLE created=2026-09-23 04:27:51.152000+00:00
-## besa-capital-financials:financial_data.daily_ohlcv rows=2078 type=TABLE created=2026-10-04 16:38:23.364000+00:00
+## besa-capital-financials:financial_data.daily_ohlcv rows=4480 type=TABLE created=2026-10-04 16:38:23.364000+00:00
   symbol STRING REQUIRED
   trade_date DATE REQUIRED
   open FLOAT NULLABLE
@@ -17,7 +17,6 @@
   source STRING NULLABLE
   loaded_at TIMESTAMP NULLABLE
   partitioning=TimePartitioning(field='trade_date',type_='MONTH') range=None clustering=['symbol', 'trade_date']
-## besa-capital-financials:financial_data.daily_ohlcv_staging rows=2500 type=TABLE created=2026-10-07 16:28:42.621000+00:00
 ## besa-capital-financials:financial_data.interpretation_links rows=312 type=TABLE created=2026-10-01 21:39:42.988000+00:00
 ## besa-capital-financials:financial_data.interpretation_routes rows=26 type=TABLE created=2026-10-01 21:39:44.626000+00:00
 ## besa-capital-financials:financial_data.interpretations rows=144 type=TABLE created=2026-10-01 21:39:42.417000+00:00
@@ -30,6 +29,13 @@
 ## besa-capital-financials:financial_data.ohlc_daily_features rows=2078 type=TABLE created=2026-10-07 15:58:48.089000+00:00
 ## besa-capital-financials:financial_data.ohlc_hit_probability rows=420 type=TABLE created=2026-10-07 15:58:54.310000+00:00
 ## besa-capital-financials:financial_data.ohlc_stats_summary rows=2499 type=TABLE created=2026-10-07 15:58:51.699000+00:00
+## besa-capital-financials:financial_data.ohlcv_coverage rows=0 type=VIEW created=2026-10-07 17:23:57.320000+00:00
+## besa-capital-financials:financial_data.ohlcv_missing_dates rows=0 type=VIEW created=2026-10-07 17:23:58.845000+00:00
+## besa-capital-financials:financial_data.ohlcv_universe rows=233 type=TABLE created=2026-10-07 17:23:55.544000+00:00
+  symbol STRING NULLABLE
+  priority INTEGER NULLABLE
+  updated_at TIMESTAMP NULLABLE
+  partitioning=None range=None clustering=None
 ## besa-capital-financials:financial_data.pipeline_debug_log rows=16174 type=TABLE created=2026-09-28 22:37:44.021000+00:00
 ## besa-capital-financials:financial_data.pipeline_tracker rows=0 type=VIEW created=2026-09-28 22:14:55.266000+00:00
 ## besa-capital-financials:financial_data.ratio_yoy rows=143413 type=TABLE created=2026-10-03 23:47:06.371000+00:00
