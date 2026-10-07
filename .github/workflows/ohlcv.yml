@@ -55,7 +55,7 @@ jobs:
         env:
           ALPHA_VANTAGE_KEY: ${{ secrets.ALPHA_VANTAGE_KEY }}
           BQ_ONLY: ${{ (github.event_name == 'push' || inputs.bq_only) && '1' || '0' }}
-          BQ_INSPECT: ${{ github.event_name == 'push' && contains(join(github.event.head_commit.modified, ','), 'bq_inspect') && '1' || '0' }}
+          BQ_INSPECT: ${{ github.event_name == 'push' && (contains(join(github.event.head_commit.modified, ','), 'bq_inspect') || contains(join(github.event.head_commit.added, ','), 'bq_inspect')) && '1' || '0' }}
         run: python download_ohlcv.py
 
       - name: Commit CSVs + cursor
