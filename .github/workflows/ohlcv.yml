@@ -3,6 +3,8 @@ name: Daily OHLCV
 on:
   schedule:
     - cron: "41 15 * * *"   # once a day, 15:41 UTC = 8:41 AM PDT / 7:41 AM PST
+  push:
+    paths: ["state/bq_reload"]   # editing this file = BigQuery-only reload (no Alpha Vantage calls)
   workflow_dispatch:         # "Run workflow" button = immediate run
     inputs:
       bq_only:
@@ -52,7 +54,7 @@ jobs:
         id: dl
         env:
           ALPHA_VANTAGE_KEY: ${{ secrets.ALPHA_VANTAGE_KEY }}
-          BQ_ONLY: ${{ inputs.bq_only && '1' || '0' }}
+          BQ_ONLY: ${{ (github.event_name == 'push' || inputs.bq_only) && '1' || '0' }}
         run: python download_ohlcv.py
 
       - name: Commit CSVs + cursor
