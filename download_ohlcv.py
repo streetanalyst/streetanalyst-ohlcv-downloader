@@ -340,7 +340,7 @@ def bq_tracking(tickers, log, run_ts):
 
 # ---------- main ----------
 def main():
-    if os.environ.get("BQ_INSPECT") == "1":  # write existing table schema/row count to state/bq_schema.txt
+    if os.environ.get("BQ_INSPECT") == "1" or os.environ.get("BQ_ONLY") == "1":  # write dataset schema to state/bq_schema.txt
         from google.cloud import bigquery
         c = bigquery.Client(project=BQ_TABLE.split('.')[0])
         ds = ".".join(BQ_TABLE.split(".")[:2])
@@ -353,7 +353,8 @@ def main():
                 out.append(f"  partitioning={tb.time_partitioning} range={tb.range_partitioning} clustering={tb.clustering_fields}")
         (ROOT / "state" / "bq_schema.txt").write_text("\n".join(out) + "\n")
         print("\n".join(out))
-        return
+        if os.environ.get("BQ_ONLY") != "1":
+            return
     if os.environ.get("BQ_ONLY") == "1":  # no Alpha Vantage calls: just (re)load CSVs + tracking into BigQuery
         tickers, ts = load_tickers(), dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
         staged, merged = bq_load(ts)
