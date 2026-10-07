@@ -1,0 +1,40 @@
+## besa-capital-financials:financial_data.analyst_patterns rows=2 type=TABLE created=2026-10-01 21:30:59.928000+00:00
+## besa-capital-financials:financial_data.analyst_questions rows=58 type=TABLE created=2026-10-01 21:26:06.528000+00:00
+## besa-capital-financials:financial_data.business_attributes rows=12540 type=TABLE created=2026-10-01 21:37:48.357000+00:00
+## besa-capital-financials:financial_data.cleaned_statements rows=836648 type=TABLE created=2026-09-18 12:24:39.692000+00:00
+## besa-capital-financials:financial_data.cleaned_statements_backup_20261001 rows=827924 type=TABLE created=2026-10-01 16:53:05.574000+00:00
+## besa-capital-financials:financial_data.company_identity rows=5 type=TABLE created=2026-10-01 21:26:07.317000+00:00
+## besa-capital-financials:financial_data.concept_mapping rows=670 type=TABLE created=2026-09-23 04:16:45.237000+00:00
+## besa-capital-financials:financial_data.concept_mapping_log rows=3394 type=TABLE created=2026-09-23 04:27:51.152000+00:00
+## besa-capital-financials:financial_data.daily_ohlcv rows=2078 type=TABLE created=2026-10-04 16:38:23.364000+00:00
+  symbol STRING REQUIRED
+  trade_date DATE REQUIRED
+  open FLOAT NULLABLE
+  high FLOAT NULLABLE
+  low FLOAT NULLABLE
+  close FLOAT NULLABLE
+  volume INTEGER NULLABLE
+  source STRING NULLABLE
+  loaded_at TIMESTAMP NULLABLE
+  partitioning=TimePartitioning(field='trade_date',type_='MONTH') range=None clustering=['symbol', 'trade_date']
+## besa-capital-financials:financial_data.daily_ohlcv_staging rows=2500 type=TABLE created=2026-10-07 16:28:42.621000+00:00
+## besa-capital-financials:financial_data.interpretation_links rows=312 type=TABLE created=2026-10-01 21:39:42.988000+00:00
+## besa-capital-financials:financial_data.interpretation_routes rows=26 type=TABLE created=2026-10-01 21:39:44.626000+00:00
+## besa-capital-financials:financial_data.interpretations rows=144 type=TABLE created=2026-10-01 21:39:42.417000+00:00
+## besa-capital-financials:financial_data.interpretations_routed rows=0 type=VIEW created=2026-10-01 21:40:36.999000+00:00
+## besa-capital-financials:financial_data.json_folder_load_queue rows=383 type=TABLE created=2026-09-17 23:56:46.736000+00:00
+## besa-capital-financials:financial_data.master_shards rows=1330545 type=TABLE created=2026-09-16 05:01:48.589000+00:00
+## besa-capital-financials:financial_data.master_shards_backup_20261001 rows=1338734 type=TABLE created=2026-10-01 16:52:59.025000+00:00
+## besa-capital-financials:financial_data.master_shards_quarantine rows=13427 type=TABLE created=2026-10-01 16:53:07.303000+00:00
+## besa-capital-financials:financial_data.master_shards_staging rows=0 type=TABLE created=2026-09-28 22:13:56.378000+00:00
+## besa-capital-financials:financial_data.ohlc_daily_features rows=2078 type=TABLE created=2026-10-07 15:58:48.089000+00:00
+## besa-capital-financials:financial_data.ohlc_hit_probability rows=420 type=TABLE created=2026-10-07 15:58:54.310000+00:00
+## besa-capital-financials:financial_data.ohlc_stats_summary rows=2499 type=TABLE created=2026-10-07 15:58:51.699000+00:00
+## besa-capital-financials:financial_data.pipeline_debug_log rows=16174 type=TABLE created=2026-09-28 22:37:44.021000+00:00
+## besa-capital-financials:financial_data.pipeline_tracker rows=0 type=VIEW created=2026-09-28 22:14:55.266000+00:00
+## besa-capital-financials:financial_data.ratio_yoy rows=143413 type=TABLE created=2026-10-03 23:47:06.371000+00:00
+## besa-capital-financials:financial_data.ratios rows=168210 type=TABLE created=2026-10-03 23:45:07.749000+00:00
+## besa-capital-financials:financial_data.stg_ohlcv_raw rows=0 type=TABLE created=2026-10-05 18:32:38.201000+00:00
+## besa-capital-financials:financial_data.verification_results rows=153993 type=TABLE created=2026-09-30 17:43:54.926000+00:00
+## besa-capital-financials:financial_data.workbook_builds rows=15 type=TABLE created=2026-10-01 17:18:00.701000+00:00
+## besa-capital-financials:financial_data.yoy_growth rows=836648 type=TABLE created=2026-10-03 23:45:02.596000+00:00
