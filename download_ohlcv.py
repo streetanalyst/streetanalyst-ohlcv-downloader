@@ -2,19 +2,24 @@
 
 Each run:
   1. Reads tickers.txt (order = priority; CUSIPs/dupes skipped).
-  2. Picks the batch: failed symbols from last run first, then the next
-     BATCH_SIZE symbols from the cursor in state/cursor.json (wraps around).
-  3. Downloads TIME_SERIES_DAILY (compact = 100 days, full = all history;
-     full requires a premium key).
-  4. Writes data/<SYMBOL>.csv, data/combined_ohlcv.csv, data/run_log.csv.
-  5. Loads rows to BigQuery staging, MERGEs into daily_ohlcv on (symbol, date)
+  2. Works through failed symbols from last run first, then symbols from the
+     cursor in state/cursor.json (wraps around).
+  3. Downloads TIME_SERIES_DAILY with outputsize=full (max history). If the key
+     refuses full, switches to compact (100 days) for the rest of the run.
+  4. Probe mode: keeps going past BATCH_SIZE until Alpha Vantage returns its
+     daily-limit message (or MAX_PER_RUN), so each run records how many land.
+  5. Writes data/<SYMBOL>.csv, data/combined_ohlcv.csv, data/run_log.csv.
+  6. Loads rows to BigQuery staging, MERGEs into daily_ohlcv on (symbol, date)
      -> no duplicates.
-  6. Advances the cursor and saves state.
+  7. Advances the cursor; appends {landed, api_calls, stop_reason, ...} to
+     state/cursor.json "history" (last 30 runs).
 
 Env:
   ALPHA_VANTAGE_KEY   required
-  AV_OUTPUTSIZE       compact (default) | full
-  BATCH_SIZE          default 20
+  AV_OUTPUTSIZE       full (default) | compact
+  BATCH_SIZE          default 20 (target)
+  PROBE               1 (default) = continue past target until limit | 0 = stop at target
+  MAX_PER_RUN         default 100
   AV_PAUSE_SEC        default 13 (free key 5 req/min)
   BQ_TABLE            default besa-capital-financials.financial_data.daily_ohlcv
   BQ_ENABLED          1 (default) | 0 = CSV only
@@ -37,8 +42,10 @@ STATE = ROOT / "state" / "cursor.json"
 TICKERS_FILE = ROOT / "tickers.txt"
 API_URL = "https://www.alphavantage.co/query"
 
-OUTPUTSIZE = os.environ.get("AV_OUTPUTSIZE", "compact")
-BATCH_SIZE = int(os.environ.get("BATCH_SIZE", "20"))
+OUTPUTSIZE = os.environ.get("AV_OUTPUTSIZE", "full")   # full = max history; auto-falls back to compact if key isn't premium
+BATCH_SIZE = int(os.environ.get("BATCH_SIZE", "20"))     # target per run
+PROBE = os.environ.get("PROBE", "1") == "1"              # keep going past BATCH_SIZE until the API says stop
+MAX_PER_RUN = int(os.environ.get("MAX_PER_RUN", "100"))  # hard cap on attempts per run
 PAUSE_SEC = float(os.environ.get("AV_PAUSE_SEC", "13"))
 BQ_TABLE = os.environ.get("BQ_TABLE", "besa-capital-financials.financial_data.daily_ohlcv")
 BQ_ENABLED = os.environ.get("BQ_ENABLED", "1") == "1"
@@ -74,30 +81,41 @@ def save_state(state):
     STATE.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
 
 
-def pick_batch(tickers, state):
-    retry = [s for s in state.get("retry", []) if s in tickers][:BATCH_SIZE]
-    batch = list(retry)
+def queue(tickers, state):
+    """Yield (symbol, from_cursor) — retries first, then the rotation from the cursor, one full lap max."""
+    retry = [s for s in state.get("retry", []) if s in tickers]
+    for s in retry:
+        yield s, False
     cur = state.get("cursor", 0) % len(tickers)
-    cycle = state.get("cycle", 1)
-    steps = 0
-    while len(batch) < BATCH_SIZE and steps < len(tickers):
-        s = tickers[cur]
-        if s not in batch:
-            batch.append(s)
-        cur += 1
-        steps += 1
-        if cur >= len(tickers):
-            cur = 0
-            cycle += 1
-    return batch, cur, cycle
+    for i in range(len(tickers)):
+        s = tickers[(cur + i) % len(tickers)]
+        if s not in retry:
+            yield s, True
 
 
 # ---------- Alpha Vantage ----------
-def fetch(symbol, key):
+class FullNotAllowed(Exception):
+    pass
+
+
+class DailyLimit(Exception):
+    pass
+
+
+def classify(msg):
+    m = msg.lower()
+    if "outputsize" in m:
+        return FullNotAllowed
+    if "per day" in m or "daily" in m or "rate limit" in m or "premium" in m:
+        return DailyLimit
+    return RuntimeError
+
+
+def fetch(symbol, key, outputsize):
     q = urllib.parse.urlencode({
         "function": "TIME_SERIES_DAILY",
         "symbol": symbol,
-        "outputsize": OUTPUTSIZE,
+        "outputsize": outputsize,
         "datatype": "json",
         "apikey": key,
     })
@@ -106,7 +124,7 @@ def fetch(symbol, key):
     series = payload.get("Time Series (Daily)")
     if not series:
         msg = payload.get("Note") or payload.get("Information") or payload.get("Error Message") or "no data"
-        raise RuntimeError(msg[:200])
+        raise classify(msg)(msg[:300])
     rows = [{
         "date": d,
         "open": v["1. open"],
@@ -125,11 +143,6 @@ def fetch(symbol, key):
     if not rows:
         raise RuntimeError("no completed bars")
     return rows
-
-
-def is_rate_limited(msg):
-    m = msg.lower()
-    return "rate limit" in m or "requests per day" in m or "premium" in m
 
 
 # ---------- CSV ----------
@@ -239,36 +252,73 @@ def main():
 
     tickers = load_tickers()
     state = load_state()
-    batch, next_cursor, next_cycle = pick_batch(tickers, state)
     run_ts = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    print(f"Universe={len(tickers)} batch={len(batch)} cursor={state.get('cursor', 0)}->{next_cursor} "
-          f"cycle={state.get('cycle', 1)} outputsize={OUTPUTSIZE}")
+    cap = MAX_PER_RUN if PROBE else BATCH_SIZE
+    n = len(tickers)
+    cursor0, cycle = state.get("cursor", 0) % n, state.get("cycle", 1)
+    print(f"Universe={n} target={BATCH_SIZE} probe={PROBE} cap={cap} cursor={cursor0} "
+          f"cycle={cycle} outputsize={OUTPUTSIZE}")
 
+    outputsize, fell_back = OUTPUTSIZE, False
+    refused = state.get("full_refused_utc")
+    if outputsize == "full" and refused:  # don't burn a call on "full" daily; re-test once a week
+        age = dt.datetime.now(dt.timezone.utc) - dt.datetime.strptime(refused, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=dt.timezone.utc)
+        if age.days < 7:
+            outputsize = "compact"
+            print(f"full refused {age.days}d ago -> compact this run (re-test after 7d)")
     fetched, failed, log = {}, [], []
-    for i, sym in enumerate(batch):
-        if i:
+    consumed, calls, stop_reason = 0, 0, "lap_complete"
+
+    def logrow(sym, status, rows=None, detail=""):
+        log.append({"run_utc": run_ts, "symbol": sym, "status": status,
+                    "rows": len(rows) if rows else 0,
+                    "first_date": rows[0]["date"] if rows else "",
+                    "last_date": rows[-1]["date"] if rows else "",
+                    "outputsize": outputsize, "detail": detail})
+
+    for sym, from_cursor in queue(tickers, state):
+        if len(fetched) + len(failed) >= cap:
+            stop_reason = "cap"
+            break
+        if calls:
             time.sleep(PAUSE_SEC)
+        if from_cursor:
+            consumed += 1
         try:
-            rows = fetch(sym, key)
+            calls += 1
+            try:
+                rows = fetch(sym, key, outputsize)
+            except FullNotAllowed as e:
+                print(f"NOTE full history refused for this key -> switching to compact: {e}")
+                outputsize, fell_back = "compact", True
+                state["full_refused_utc"] = run_ts
+                time.sleep(PAUSE_SEC)
+                calls += 1
+                rows = fetch(sym, key, outputsize)
+            if outputsize == "full":
+                state.pop("full_refused_utc", None)
             fetched[sym] = rows
             merge_symbol_csv(sym, rows)
-            log.append({"run_utc": run_ts, "symbol": sym, "status": "OK", "rows": len(rows),
-                        "first_date": rows[0]["date"], "last_date": rows[-1]["date"], "detail": ""})
-            print(f"OK   {sym:<6} {len(rows)} rows  {rows[0]['date']}..{rows[-1]['date']}")
-        except Exception as e:
-            msg = str(e)
+            logrow(sym, "OK", rows)
+            print(f"OK   #{len(fetched):<3} {sym:<6} {len(rows):>5} rows  {rows[0]['date']}..{rows[-1]['date']}")
+        except DailyLimit as e:
             failed.append(sym)
-            log.append({"run_utc": run_ts, "symbol": sym, "status": "FAIL", "rows": 0,
-                        "first_date": "", "last_date": "", "detail": msg})
-            print(f"FAIL {sym:<6} {msg}")
-            if is_rate_limited(msg):
-                rest = [s for s in batch[i + 1:]]
-                failed.extend(rest)
-                print(f"STOP rate limit hit; deferring {rest}")
-                break
+            logrow(sym, "LIMIT", detail=str(e))
+            print(f"STOP daily limit after {len(fetched)} OK / {calls} calls: {e}")
+            stop_reason = "daily_limit"
+            break
+        except Exception as e:
+            failed.append(sym)
+            logrow(sym, "FAIL", detail=str(e))
+            print(f"FAIL {sym:<6} {e}")
+
+    next_cursor = cursor0 + consumed
+    if next_cursor >= n:
+        cycle += 1
+    next_cursor %= n
 
     write_csv(DATA / "run_log.csv",
-              ["run_utc", "symbol", "status", "rows", "first_date", "last_date", "detail"], log)
+              ["run_utc", "symbol", "status", "rows", "first_date", "last_date", "outputsize", "detail"], log)
     total = rebuild_combined()
 
     staged = merged = 0
@@ -276,10 +326,15 @@ def main():
         staged, merged = bq_load(fetched, run_ts)
         print(f"BQ   staged={staged} merged(inserted+updated)={merged} -> {BQ_TABLE}")
 
-    state.update({"cursor": next_cursor, "cycle": next_cycle, "retry": failed,
-                  "last_run_utc": run_ts, "last_ok": len(fetched), "last_fail": len(failed)})
+    run = {"run_utc": run_ts, "landed": len(fetched), "failed": len(failed), "api_calls": calls,
+           "stop_reason": stop_reason, "outputsize": outputsize, "full_fallback": fell_back,
+           "bq_rows_staged": staged, "bq_rows_merged": merged}
+    history = (state.get("history") or [])[-29:] + [run]
+    state.update({"cursor": next_cursor, "cycle": cycle, "retry": failed,
+                  "last_run_utc": run_ts, "history": history})
     save_state(state)
-    print(f"Done: {len(fetched)}/{len(batch)} OK, csv_rows={total}, retry_next={failed}")
+    print(f"Done: landed={len(fetched)} failed={len(failed)} calls={calls} stop={stop_reason} "
+          f"csv_rows={total} retry_next={failed}")
     if not fetched:
         sys.exit(1)
 

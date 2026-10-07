@@ -1,6 +1,6 @@
 # streetanalyst-ohlcv-downloader
 
-Alpha Vantage `TIME_SERIES_DAILY` → CSV + BigQuery `daily_ohlcv`, 20 symbols per day in rotating batches, run by GitHub Actions. History accumulates with no duplicates (`MERGE` on `symbol, date`).
+Alpha Vantage `TIME_SERIES_DAILY` → CSV + BigQuery `daily_ohlcv`, once a day, target 20 symbols then probes 21, 22, … until Alpha Vantage's daily limit, run by GitHub Actions. History accumulates with no duplicates (`MERGE` on `symbol, date`).
 
 ## Files
 
@@ -9,7 +9,7 @@ Alpha Vantage `TIME_SERIES_DAILY` → CSV + BigQuery `daily_ohlcv`, 20 symbols p
 | `download_ohlcv.py` | Picks batch, downloads, merges CSVs, loads BigQuery, advances cursor |
 | `tickers.txt` | Priority order. Built from Fidelity export Oct-07-2026, sorted by Total gain/loss % (highest first). 233 symbols. |
 | `state/cursor.json` | Next position, cycle number, retry list. Committed after every run. |
-| `.github/workflows/ohlcv.yml` | Daily 01:17 UTC (6:17 PM PDT). Manual run button. |
+| `.github/workflows/ohlcv.yml` | Once a day 15:41 UTC (8:41 AM PDT). **Run workflow** button = run now. |
 | `data/<SYMBOL>.csv` | Accumulated history per symbol (old + new, dedup on date) |
 | `data/combined_ohlcv.csv` | All symbols stacked |
 | `data/run_log.csv` | Last run per-symbol status |
@@ -18,12 +18,12 @@ Alpha Vantage `TIME_SERIES_DAILY` → CSV + BigQuery `daily_ohlcv`, 20 symbols p
 
 | Rule | Behavior |
 |---|---|
-| Batch | Failed symbols from last run first, then next symbols from cursor, total 20 |
+| Batch | Failed symbols from last run first, then next symbols from cursor; target 20, keeps going until the daily-limit message (cap 100) |
 | Wrap | After symbol 233 the cursor returns to 1, `cycle` increments |
-| Cycle length | 233 / 20 ≈ 12 days |
-| Rate-limit hit | Stops batch, remaining symbols go to retry list |
-| Free key (compact) | 100-day window per pull; 12-day cycle < 100 days → no gaps; history grows forward |
-| Premium key | Set `AV_OUTPUTSIZE: "full"` in the workflow → max history per symbol, same dedupe |
+| Cycle length | 233 / landed-per-day (≈ 25 on a free key → ≈ 10 days) |
+| Daily-limit hit | Stops run; that symbol retries first next run. `state/cursor.json` → `history` logs landed / api_calls / stop_reason per run |
+| History depth | Requests `full` (max history). If the key refuses `full`, switches to `compact` (100 days) and re-tests `full` weekly |
+| Compact mode | 100-day window per pull; ≈10-day cycle < 100 days → no gaps; history grows forward |
 
 ## BigQuery
 

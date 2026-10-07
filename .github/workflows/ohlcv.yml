@@ -2,13 +2,8 @@ name: Daily OHLCV
 
 on:
   schedule:
-    - cron: "7 * * * *"   # hourly check; the batch only runs once 24h have passed since the last run
-  workflow_dispatch:
-    inputs:
-      force:
-        description: "Run now, ignore the 24h gate"
-        type: boolean
-        default: true
+    - cron: "41 15 * * *"   # once a day, 15:41 UTC = 8:41 AM PDT / 7:41 AM PST
+  workflow_dispatch:         # "Run workflow" button = immediate run
 
 permissions:
   contents: write
@@ -20,58 +15,38 @@ concurrency:
 jobs:
   batch:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     env:
-      BATCH_SIZE: "20"
-      AV_OUTPUTSIZE: "compact"   # set to "full" once the key is premium
+      AV_OUTPUTSIZE: "full"    # max history; auto-falls back to compact if the key isn't premium
+      BATCH_SIZE: "20"         # target
+      PROBE: "1"               # keep going 21, 22, ... until Alpha Vantage says stop
+      MAX_PER_RUN: "100"
       BQ_TABLE: "besa-capital-financials.financial_data.daily_ohlcv"
-      GATE_HOURS: "24"
     steps:
       - uses: actions/checkout@v4
 
-      - name: 24h gate
-        id: gate
-        env:
-          FORCE: ${{ github.event_name == 'workflow_dispatch' && inputs.force }}
-        run: |
-          python3 - <<'EOF'
-          import json, os, datetime as dt
-          due = True
-          if os.environ.get("FORCE") != "true" and os.path.exists("state/cursor.json"):
-              last = json.load(open("state/cursor.json")).get("last_run_utc")
-              if last:
-                  t = dt.datetime.strptime(last, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=dt.timezone.utc)
-                  hrs = (dt.datetime.now(dt.timezone.utc) - t).total_seconds() / 3600
-                  due = hrs >= float(os.environ["GATE_HOURS"])
-                  print(f"last_run_utc={last} hours_since={hrs:.2f} due={due}")
-          open(os.environ["GITHUB_OUTPUT"], "a").write(f"due={'true' if due else 'false'}\n")
-          EOF
-
-      - if: steps.gate.outputs.due == 'true'
-        uses: google-github-actions/auth@v2
+      - uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - if: steps.gate.outputs.due == 'true'
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - if: steps.gate.outputs.due == 'true'
-        run: pip install --quiet google-cloud-bigquery
+      - run: pip install --quiet google-cloud-bigquery
 
       - name: Download batch + load BigQuery
-        if: steps.gate.outputs.due == 'true'
         env:
           ALPHA_VANTAGE_KEY: ${{ secrets.ALPHA_VANTAGE_KEY }}
         run: python download_ohlcv.py
 
       - name: Commit CSVs + cursor
-        if: always() && steps.gate.outputs.due == 'true'
+        if: always()
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/ state/
           git diff --cached --quiet && echo "No changes" && exit 0
           git commit -m "OHLCV batch $(date -u +%Y-%m-%d)"
+          git pull --rebase --quiet
           git push
