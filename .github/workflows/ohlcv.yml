@@ -25,6 +25,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check secrets shape (no values printed)
+        env:
+          SA: ${{ secrets.GCP_SA_KEY }}
+          AV: ${{ secrets.ALPHA_VANTAGE_KEY }}
+        run: |
+          python3 - <<'EOF'
+          import json, os, sys
+          sa, av = os.environ.get("SA", ""), os.environ.get("AV", "")
+          s = sa.strip()
+          print(f"GCP_SA_KEY: length={len(sa)} starts_with_brace={s[:1]=='{'} ends_with_brace={s[-1:]=='}'}")
+          ok = True
+          try:
+              d = json.loads(s)
+              print(f"GCP_SA_KEY: valid JSON, type={d.get('type')}, has_private_key={'private_key' in d}, "
+                    f"client_email_domain={d.get('client_email','').split('@')[-1]}")
+              ok = d.get("type") == "service_account" and "private_key" in d
+          except Exception as e:
+              print(f"GCP_SA_KEY: NOT valid JSON ({type(e).__name__}) -> paste the whole block from {{ to }}")
+              ok = False
+          print(f"ALPHA_VANTAGE_KEY: length={len(av.strip())} alnum={av.strip().isalnum()}")
+          if not av.strip():
+              ok = False
+          sys.exit(0 if ok else 1)
+          EOF
+
       - uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
