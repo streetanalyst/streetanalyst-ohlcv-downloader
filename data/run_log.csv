@@ -24,4 +24,4 @@ run_utc,symbol,status,rows,first_date,last_date,outputsize,detail
 2026-10-07T16:22:59Z,DAR,OK,100,2026-05-14,2026-10-06,compact,
 2026-10-07T16:22:59Z,GE,OK,100,2026-05-14,2026-10-06,compact,
 2026-10-07T16:22:59Z,ENTA,OK,100,2026-05-14,2026-10-06,compact,
-2026-10-07T16:22:59Z,ABBV,LIMIT,0,,,compact,We have detected your API key as UJSMKOH47NM1GTCV and our standard API rate limit is 25 requests per day. Please subscribe to any of the premium plans at https://www.alphavantage.co/premium/ to instantly remove all daily rate limits.
+2026-10-07T16:22:59Z,ABBV,LIMIT,0,,,compact,We have detected your API key as *** and our standard API rate limit is 25 requests per day. Please subscribe to any of the premium plans at https://www.alphavantage.co/premium/ to instantly remove all daily rate limits.

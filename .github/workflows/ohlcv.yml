@@ -4,6 +4,11 @@ on:
   schedule:
     - cron: "41 15 * * *"   # once a day, 15:41 UTC = 8:41 AM PDT / 7:41 AM PST
   workflow_dispatch:         # "Run workflow" button = immediate run
+    inputs:
+      bq_only:
+        description: "BigQuery only: reload existing CSVs + tracking, no Alpha Vantage calls"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -47,6 +52,7 @@ jobs:
         id: dl
         env:
           ALPHA_VANTAGE_KEY: ${{ secrets.ALPHA_VANTAGE_KEY }}
+          BQ_ONLY: ${{ inputs.bq_only && '1' || '0' }}
         run: python download_ohlcv.py
 
       - name: Commit CSVs + cursor

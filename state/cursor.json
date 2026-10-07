@@ -1,0 +1,19 @@
+{
+  "cursor": 25,
+  "retry": [],
+  "cycle": 1,
+  "last_run_utc": "2026-10-07T16:22:59Z",
+  "full_refused_utc": "2026-10-07T16:22:59Z",
+  "history": [
+    {
+      "run_utc": "2026-10-07T16:22:59Z",
+      "landed": 25,
+      "failed": 1,
+      "api_calls": 27,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": true,
+      "bq_error": "BigQuery step failed; state rebuilt manually from run_log.csv"
+    }
+  ]
+}

@@ -124,6 +124,7 @@ def fetch(symbol, key, outputsize):
     series = payload.get("Time Series (Daily)")
     if not series:
         msg = payload.get("Note") or payload.get("Information") or payload.get("Error Message") or "no data"
+        msg = msg.replace(key, "***")  # Alpha Vantage echoes the key; never store it
         raise classify(msg)(msg[:300])
     rows = [{
         "date": d,
@@ -195,7 +196,18 @@ def ensure_main_table(client):
     """).result()
 
 
-def bq_load(fetched, run_ts):
+def all_csv_rows():
+    """Every row in data/<SYMBOL>.csv -> {symbol: [rows]}. Loading all of it each run makes BigQuery self-healing."""
+    out = {}
+    for p in sorted(DATA.glob("*.csv")):
+        if p.name in ("combined_ohlcv.csv", "run_log.csv"):
+            continue
+        with p.open(encoding="utf-8") as f:
+            out[p.stem] = list(csv.DictReader(f))
+    return out
+
+
+def bq_load(run_ts):
     from google.cloud import bigquery
 
     client = bigquery.Client()
@@ -210,7 +222,7 @@ def bq_load(fetched, run_ts):
         "low": float(r["low"]), "close": float(r["close"]),
         "volume": int(float(r["volume"])),
         "source": "alphavantage_daily", "loaded_at": run_ts,
-    } for sym, rs in fetched.items() for r in rs]
+    } for sym, rs in all_csv_rows().items() for r in rs]
     if not rows:
         return 0, 0
 
@@ -328,6 +340,12 @@ def bq_tracking(tickers, log, run_ts):
 
 # ---------- main ----------
 def main():
+    if os.environ.get("BQ_ONLY") == "1":  # no Alpha Vantage calls: just (re)load CSVs + tracking into BigQuery
+        tickers, ts = load_tickers(), dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        staged, merged = bq_load(ts)
+        print(f"BQ   staged={staged} merged(inserted+updated)={merged} -> {BQ_TABLE}")
+        bq_tracking(tickers, [], ts)
+        return
     key = os.environ.get("ALPHA_VANTAGE_KEY")
     if not key:
         sys.exit("ALPHA_VANTAGE_KEY not set")
@@ -404,25 +422,31 @@ def main():
               ["run_utc", "symbol", "status", "rows", "first_date", "last_date", "outputsize", "detail"], log)
     total = rebuild_combined()
 
-    staged = merged = 0
-    if BQ_ENABLED and fetched:
-        staged, merged = bq_load(fetched, run_ts)
-        print(f"BQ   staged={staged} merged(inserted+updated)={merged} -> {BQ_TABLE}")
-    if BQ_ENABLED:
-        bq_tracking(tickers, log, run_ts)
-
     run = {"run_utc": run_ts, "landed": len(fetched), "failed": len(failed), "api_calls": calls,
-           "stop_reason": stop_reason, "outputsize": outputsize, "full_fallback": fell_back,
-           "bq_rows_staged": staged, "bq_rows_merged": merged}
+           "stop_reason": stop_reason, "outputsize": outputsize, "full_fallback": fell_back}
     history = (state.get("history") or [])[-29:] + [run]
     state.update({"cursor": next_cursor, "cycle": cycle, "retry": failed,
                   "last_run_utc": run_ts, "history": history})
-    save_state(state)
+    save_state(state)  # saved BEFORE BigQuery so a BQ failure never loses the rotation position
     print(f"Done: landed={len(fetched)} failed={len(failed)} calls={calls} stop={stop_reason} "
           f"csv_rows={total} retry_next={failed}")
-    if not fetched:
-        sys.exit(1)
 
+    bq_error = None
+    if BQ_ENABLED:
+        try:
+            staged, merged = bq_load(run_ts)
+            run.update({"bq_rows_staged": staged, "bq_rows_merged": merged})
+            print(f"BQ   staged={staged} merged(inserted+updated)={merged} -> {BQ_TABLE}")
+            bq_tracking(tickers, log, run_ts)
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
+            bq_error = f"{type(e).__name__}: {e}"[:1000]
+            run["bq_error"] = bq_error
+        save_state(state)
+
+    if not fetched or bq_error:
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
