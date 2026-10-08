@@ -1,8 +1,10 @@
 {
-  "cursor": 25,
-  "retry": [],
+  "cursor": 51,
+  "retry": [
+    "PNC"
+  ],
   "cycle": 1,
-  "last_run_utc": "2026-10-07T16:22:59Z",
+  "last_run_utc": "2026-10-08T20:47:57Z",
   "full_refused_utc": "2026-10-07T16:22:59Z",
   "history": [
     {
@@ -14,6 +16,17 @@
       "outputsize": "compact",
       "full_fallback": true,
       "bq_error": "BigQuery step failed; state rebuilt manually from run_log.csv"
+    },
+    {
+      "run_utc": "2026-10-08T20:47:57Z",
+      "landed": 25,
+      "failed": 1,
+      "api_calls": 26,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": false,
+      "bq_rows_staged": 5000,
+      "bq_rows_merged": 2404
     }
   ]
 }
