@@ -1,10 +1,10 @@
 {
-  "cursor": 51,
+  "cursor": 76,
   "retry": [
-    "PNC"
+    "TJX"
   ],
   "cycle": 1,
-  "last_run_utc": "2026-10-08T20:47:57Z",
+  "last_run_utc": "2026-10-09T20:18:32Z",
   "full_refused_utc": "2026-10-07T16:22:59Z",
   "history": [
     {
@@ -27,6 +27,17 @@
       "full_fallback": false,
       "bq_rows_staged": 5000,
       "bq_rows_merged": 2404
+    },
+    {
+      "run_utc": "2026-10-09T20:18:32Z",
+      "landed": 25,
+      "failed": 1,
+      "api_calls": 26,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": false,
+      "bq_rows_staged": 7476,
+      "bq_rows_merged": 2191
     }
   ]
 }
