@@ -1,10 +1,10 @@
 {
-  "cursor": 76,
+  "cursor": 84,
   "retry": [
-    "TJX"
+    "GRMN"
   ],
   "cycle": 1,
-  "last_run_utc": "2026-10-09T20:18:32Z",
+  "last_run_utc": "2026-10-10T19:29:24Z",
   "full_refused_utc": "2026-10-07T16:22:59Z",
   "history": [
     {
@@ -38,6 +38,17 @@
       "full_fallback": false,
       "bq_rows_staged": 7476,
       "bq_rows_merged": 2191
+    },
+    {
+      "run_utc": "2026-10-10T19:29:24Z",
+      "landed": 8,
+      "failed": 1,
+      "api_calls": 9,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": false,
+      "bq_rows_staged": 8276,
+      "bq_rows_merged": 705
     }
   ]
 }
