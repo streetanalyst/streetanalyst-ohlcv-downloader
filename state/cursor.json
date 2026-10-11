@@ -1,10 +1,10 @@
 {
-  "cursor": 84,
+  "cursor": 109,
   "retry": [
-    "GRMN"
+    "DRI"
   ],
   "cycle": 1,
-  "last_run_utc": "2026-10-10T19:29:24Z",
+  "last_run_utc": "2026-10-11T19:41:18Z",
   "full_refused_utc": "2026-10-07T16:22:59Z",
   "history": [
     {
@@ -49,6 +49,17 @@
       "full_fallback": false,
       "bq_rows_staged": 8276,
       "bq_rows_merged": 705
+    },
+    {
+      "run_utc": "2026-10-11T19:41:18Z",
+      "landed": 25,
+      "failed": 1,
+      "api_calls": 26,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": false,
+      "bq_rows_staged": 10776,
+      "bq_rows_merged": 2500
     }
   ]
 }
