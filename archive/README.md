@@ -9,3 +9,6 @@ One-time load of Steve's old Google Drive price and macro sheets into BigQuery (
 | gas_prices_la.csv.gz | financial_data.gas_prices_la | weekly | EIA weekly Los Angeles regular retail gasoline, Jun 2000 - Apr 2024 (kept separate from macro_series) |
 
 Pushing any change under `archive/` re-runs `archive_load.yml` (WRITE_TRUNCATE, so re-runs never duplicate). `daily_ohlcv` is not touched.
+
+## ticker_lists
+Membership only (list_id, list_type, symbol, source file). 32 lists: blacklists, index constituents (R2K, SP500, NASDAQ, NYSE, NYSE foreign, DOW, OTCQB), universes, portfolios, screens, watchlist. No descriptions, sectors or AI text. Source sheets kept in Drive (live). View `ticker_list_check` = one row per symbol with blacklist/index/portfolio flags.

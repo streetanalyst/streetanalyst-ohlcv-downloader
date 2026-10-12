@@ -18,6 +18,9 @@ jobs = {
   "gas_prices_la": ("archive/gas_prices_la.csv.gz", [
     S("obs_date","DATE","REQUIRED"), S("price_usd_per_gallon","FLOAT64","REQUIRED"), S("series_key","STRING"),
     S("source_file","STRING"), S("source_file_id","STRING")]),
+  "ticker_lists": ("archive/ticker_lists.csv.gz", [
+    S("list_id","STRING","REQUIRED"), S("list_name","STRING"), S("list_type","STRING"), S("list_date_text","STRING"),
+    S("symbol","STRING","REQUIRED"), S("source_file","STRING"), S("source_file_id","STRING")]),
 }
 for t, (path, schema) in jobs.items():
     cfg = bq.LoadJobConfig(schema=schema, source_format=bq.SourceFormat.CSV, skip_leading_rows=1,
