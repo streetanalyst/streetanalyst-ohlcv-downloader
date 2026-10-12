@@ -6,5 +6,6 @@ One-time load of Steve's old Google Drive price and macro sheets into BigQuery (
 |---|---|---|---|
 | price_history_archive.csv.gz | financial_data.price_history_archive | 503,864 | 79 tickers, 1972-2026, one row per symbol+date; GOOGLEFINANCE/Yahoo split-adjusted (see price_basis) |
 | macro_series.csv.gz | financial_data.macro_series | 27,424 | VIX, Brent (BZ=F), Dollar Index, Bitcoin, Baker Hughes rig count |
+| gas_prices_la.csv.gz | financial_data.gas_prices_la | weekly | EIA weekly Los Angeles regular retail gasoline, Jun 2000 - Apr 2024 (kept separate from macro_series) |
 
 Pushing any change under `archive/` re-runs `archive_load.yml` (WRITE_TRUNCATE, so re-runs never duplicate). `daily_ohlcv` is not touched.

@@ -15,6 +15,9 @@ jobs = {
     S("series_id","STRING","REQUIRED"), S("series_name","STRING"), S("frequency","STRING"), S("obs_date","DATE","REQUIRED"),
     S("open","FLOAT64"), S("high","FLOAT64"), S("low","FLOAT64"), S("close","FLOAT64","REQUIRED"), S("volume","FLOAT64"),
     S("extra","FLOAT64"), S("source_file","STRING"), S("source_file_id","STRING")]),
+  "gas_prices_la": ("archive/gas_prices_la.csv.gz", [
+    S("obs_date","DATE","REQUIRED"), S("price_usd_per_gallon","FLOAT64","REQUIRED"), S("series_key","STRING"),
+    S("source_file","STRING"), S("source_file_id","STRING")]),
 }
 for t, (path, schema) in jobs.items():
     cfg = bq.LoadJobConfig(schema=schema, source_format=bq.SourceFormat.CSV, skip_leading_rows=1,
