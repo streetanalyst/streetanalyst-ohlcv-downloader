@@ -21,6 +21,9 @@ jobs = {
   "ticker_lists": ("archive/ticker_lists.csv.gz", [
     S("list_id","STRING","REQUIRED"), S("list_name","STRING"), S("list_type","STRING"), S("list_date_text","STRING"),
     S("symbol","STRING","REQUIRED"), S("source_file","STRING"), S("source_file_id","STRING")]),
+  "sheet_cell_archive": ("archive/sheet_cell_archive.csv.gz", [
+    S("source_file_id","STRING","REQUIRED"), S("source_file","STRING"), S("tab","STRING"), S("row_num","INT64"),
+    S("col","INT64"), S("cell","STRING"), S("value","STRING"), S("contains_ai_text","BOOL")]),
 }
 for t, (path, schema) in jobs.items():
     cfg = bq.LoadJobConfig(schema=schema, source_format=bq.SourceFormat.CSV, skip_leading_rows=1,
