@@ -1,11 +1,11 @@
 {
-  "cursor": 155,
+  "cursor": 180,
   "retry": [
-    "MKC"
+    "STAG"
   ],
   "cycle": 1,
-  "last_run_utc": "2026-10-13T20:48:16Z",
-  "full_refused_utc": "2026-10-07T16:22:59Z",
+  "last_run_utc": "2026-10-14T19:39:24Z",
+  "full_refused_utc": "2026-10-14T19:39:24Z",
   "history": [
     {
       "run_utc": "2026-10-07T16:22:59Z",
@@ -81,6 +81,17 @@
       "outputsize": "compact",
       "full_fallback": false,
       "bq_rows_staged": 15376,
+      "bq_rows_merged": 2500
+    },
+    {
+      "run_utc": "2026-10-14T19:39:24Z",
+      "landed": 25,
+      "failed": 1,
+      "api_calls": 27,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": true,
+      "bq_rows_staged": 17876,
       "bq_rows_merged": 2500
     }
   ]
