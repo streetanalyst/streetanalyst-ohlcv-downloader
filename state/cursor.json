@@ -1,10 +1,10 @@
 {
-  "cursor": 20,
+  "cursor": 45,
   "retry": [
-    "BKR"
+    "JCI"
   ],
   "cycle": 2,
-  "last_run_utc": "2026-10-17T17:55:24Z",
+  "last_run_utc": "2026-10-18T18:15:47Z",
   "full_refused_utc": "2026-10-14T19:39:24Z",
   "history": [
     {
@@ -126,6 +126,17 @@
       "full_fallback": false,
       "bq_rows_staged": 23428,
       "bq_rows_merged": 752
+    },
+    {
+      "run_utc": "2026-10-18T18:15:47Z",
+      "landed": 25,
+      "failed": 1,
+      "api_calls": 26,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": false,
+      "bq_rows_staged": 23590,
+      "bq_rows_merged": 178
     }
   ]
 }
