@@ -1,10 +1,10 @@
 {
-  "cursor": 45,
+  "cursor": 70,
   "retry": [
-    "JCI"
+    "PFGC"
   ],
   "cycle": 2,
-  "last_run_utc": "2026-10-18T18:15:47Z",
+  "last_run_utc": "2026-10-19T20:41:41Z",
   "full_refused_utc": "2026-10-14T19:39:24Z",
   "history": [
     {
@@ -137,6 +137,17 @@
       "full_fallback": false,
       "bq_rows_staged": 23590,
       "bq_rows_merged": 178
+    },
+    {
+      "run_utc": "2026-10-19T20:41:41Z",
+      "landed": 25,
+      "failed": 1,
+      "api_calls": 26,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": false,
+      "bq_rows_staged": 23765,
+      "bq_rows_merged": 181
     }
   ]
 }
