@@ -1,10 +1,10 @@
 {
-  "cursor": 95,
+  "cursor": 120,
   "retry": [
-    "BWA"
+    "FANG"
   ],
   "cycle": 2,
-  "last_run_utc": "2026-10-20T19:33:22Z",
+  "last_run_utc": "2026-10-21T19:33:02Z",
   "full_refused_utc": "2026-10-14T19:39:24Z",
   "history": [
     {
@@ -159,6 +159,17 @@
       "full_fallback": false,
       "bq_rows_staged": 23921,
       "bq_rows_merged": 156
+    },
+    {
+      "run_utc": "2026-10-21T19:33:02Z",
+      "landed": 25,
+      "failed": 1,
+      "api_calls": 26,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": false,
+      "bq_rows_staged": 24085,
+      "bq_rows_merged": 175
     }
   ]
 }
