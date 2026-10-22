@@ -1,11 +1,39 @@
 {
-  "cursor": 120,
+  "cursor": 173,
   "retry": [
-    "FANG"
+    "FANG",
+    "TOL",
+    "LWAY",
+    "BIIB",
+    "UHT",
+    "TSEM",
+    "WTRG",
+    "SCI",
+    "RGR",
+    "ED",
+    "WLY",
+    "CMS",
+    "EW",
+    "XYZ",
+    "SO",
+    "KNX",
+    "BA",
+    "PLD",
+    "VZ",
+    "CMC",
+    "SLB",
+    "YETI",
+    "MAT",
+    "CRM",
+    "IBKR",
+    "IBM",
+    "MMSI",
+    "O",
+    "ICE"
   ],
   "cycle": 2,
-  "last_run_utc": "2026-10-21T19:33:02Z",
-  "full_refused_utc": "2026-10-14T19:39:24Z",
+  "last_run_utc": "2026-10-22T19:26:05Z",
+  "full_refused_utc": "2026-10-22T19:26:05Z",
   "history": [
     {
       "run_utc": "2026-10-07T16:22:59Z",
@@ -170,6 +198,17 @@
       "full_fallback": false,
       "bq_rows_staged": 24085,
       "bq_rows_merged": 175
+    },
+    {
+      "run_utc": "2026-10-22T19:26:05Z",
+      "landed": 25,
+      "failed": 29,
+      "api_calls": 55,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": true,
+      "bq_rows_staged": 24235,
+      "bq_rows_merged": 158
     }
   ]
 }
