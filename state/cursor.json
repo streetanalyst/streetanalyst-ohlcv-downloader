@@ -1,10 +1,10 @@
 {
-  "cursor": 173,
+  "cursor": 198,
   "retry": [
-    "IBM"
+    "YORW"
   ],
   "cycle": 2,
-  "last_run_utc": "2026-10-23T19:31:05Z",
+  "last_run_utc": "2026-10-24T18:20:34Z",
   "full_refused_utc": "2026-10-22T19:26:05Z",
   "history": [
     {
@@ -192,6 +192,17 @@
       "full_fallback": false,
       "bq_rows_staged": 24420,
       "bq_rows_merged": 210
+    },
+    {
+      "run_utc": "2026-10-24T18:20:34Z",
+      "landed": 25,
+      "failed": 1,
+      "api_calls": 26,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": false,
+      "bq_rows_staged": 24602,
+      "bq_rows_merged": 183
     }
   ]
 }
