@@ -1,10 +1,10 @@
 {
-  "cursor": 223,
+  "cursor": 15,
   "retry": [
-    "INFY"
+    "USFD"
   ],
-  "cycle": 2,
-  "last_run_utc": "2026-10-25T18:32:22Z",
+  "cycle": 3,
+  "last_run_utc": "2026-10-26T20:43:18Z",
   "full_refused_utc": "2026-10-22T19:26:05Z",
   "history": [
     {
@@ -213,6 +213,17 @@
       "outputsize": "compact",
       "full_fallback": false,
       "bq_rows_staged": 24757,
+      "bq_rows_merged": 155
+    },
+    {
+      "run_utc": "2026-10-26T20:43:18Z",
+      "landed": 25,
+      "failed": 1,
+      "api_calls": 26,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": false,
+      "bq_rows_staged": 24912,
       "bq_rows_merged": 155
     }
   ]
