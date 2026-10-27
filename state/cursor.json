@@ -1,10 +1,11 @@
 {
-  "cursor": 15,
+  "cursor": 40,
   "retry": [
-    "USFD"
+    "DAR",
+    "TGT"
   ],
   "cycle": 3,
-  "last_run_utc": "2026-10-26T20:43:18Z",
+  "last_run_utc": "2026-10-27T20:13:30Z",
   "full_refused_utc": "2026-10-22T19:26:05Z",
   "history": [
     {
@@ -225,6 +226,17 @@
       "full_fallback": false,
       "bq_rows_staged": 24912,
       "bq_rows_merged": 155
+    },
+    {
+      "run_utc": "2026-10-27T20:13:30Z",
+      "landed": 24,
+      "failed": 2,
+      "api_calls": 26,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": false,
+      "bq_rows_staged": 25056,
+      "bq_rows_merged": 144
     }
   ]
 }
