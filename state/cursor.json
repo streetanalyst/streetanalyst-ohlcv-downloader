@@ -1,11 +1,10 @@
 {
-  "cursor": 40,
+  "cursor": 64,
   "retry": [
-    "DAR",
-    "TGT"
+    "AMZN"
   ],
   "cycle": 3,
-  "last_run_utc": "2026-10-27T20:13:30Z",
+  "last_run_utc": "2026-10-28T20:31:44Z",
   "full_refused_utc": "2026-10-22T19:26:05Z",
   "history": [
     {
@@ -237,6 +236,17 @@
       "full_fallback": false,
       "bq_rows_staged": 25056,
       "bq_rows_merged": 144
+    },
+    {
+      "run_utc": "2026-10-28T20:31:44Z",
+      "landed": 25,
+      "failed": 1,
+      "api_calls": 26,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": false,
+      "bq_rows_staged": 25234,
+      "bq_rows_merged": 197
     }
   ]
 }
