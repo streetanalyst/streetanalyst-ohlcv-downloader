@@ -1,11 +1,11 @@
 {
-  "cursor": 64,
+  "cursor": 89,
   "retry": [
-    "AMZN"
+    "RMD"
   ],
   "cycle": 3,
-  "last_run_utc": "2026-10-28T20:31:44Z",
-  "full_refused_utc": "2026-10-22T19:26:05Z",
+  "last_run_utc": "2026-10-29T20:31:23Z",
+  "full_refused_utc": "2026-10-29T20:31:23Z",
   "history": [
     {
       "run_utc": "2026-10-07T16:22:59Z",
@@ -247,6 +247,17 @@
       "full_fallback": false,
       "bq_rows_staged": 25234,
       "bq_rows_merged": 197
+    },
+    {
+      "run_utc": "2026-10-29T20:31:23Z",
+      "landed": 25,
+      "failed": 1,
+      "api_calls": 27,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": true,
+      "bq_rows_staged": 25433,
+      "bq_rows_merged": 206
     }
   ]
 }
