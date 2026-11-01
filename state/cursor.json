@@ -1,10 +1,10 @@
 {
-  "cursor": 138,
+  "cursor": 163,
   "retry": [
-    "VZ"
+    "DOC"
   ],
   "cycle": 3,
-  "last_run_utc": "2026-10-31T19:31:22Z",
+  "last_run_utc": "2026-11-01T19:52:58Z",
   "full_refused_utc": "2026-10-29T20:31:23Z",
   "history": [
     {
@@ -280,6 +280,17 @@
       "full_fallback": false,
       "bq_rows_staged": 25771,
       "bq_rows_merged": 164
+    },
+    {
+      "run_utc": "2026-11-01T19:52:58Z",
+      "landed": 25,
+      "failed": 1,
+      "api_calls": 26,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": false,
+      "bq_rows_staged": 25949,
+      "bq_rows_merged": 181
     }
   ]
 }
