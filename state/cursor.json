@@ -1,10 +1,10 @@
 {
-  "cursor": 163,
+  "cursor": 188,
   "retry": [
-    "DOC"
+    "HSY"
   ],
   "cycle": 3,
-  "last_run_utc": "2026-11-01T19:52:58Z",
+  "last_run_utc": "2026-11-02T23:11:56Z",
   "full_refused_utc": "2026-10-29T20:31:23Z",
   "history": [
     {
@@ -291,6 +291,17 @@
       "full_fallback": false,
       "bq_rows_staged": 25949,
       "bq_rows_merged": 181
+    },
+    {
+      "run_utc": "2026-11-02T23:11:56Z",
+      "landed": 25,
+      "failed": 1,
+      "api_calls": 26,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": false,
+      "bq_rows_staged": 26125,
+      "bq_rows_merged": 176
     }
   ]
 }
