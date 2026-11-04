@@ -1,10 +1,10 @@
 {
-  "cursor": 213,
+  "cursor": 5,
   "retry": [
-    "BX"
+    "WELL"
   ],
-  "cycle": 3,
-  "last_run_utc": "2026-11-03T21:13:50Z",
+  "cycle": 4,
+  "last_run_utc": "2026-11-04T21:27:56Z",
   "full_refused_utc": "2026-10-29T20:31:23Z",
   "history": [
     {
@@ -313,6 +313,17 @@
       "full_fallback": false,
       "bq_rows_staged": 26275,
       "bq_rows_merged": 150
+    },
+    {
+      "run_utc": "2026-11-04T21:27:56Z",
+      "landed": 25,
+      "failed": 1,
+      "api_calls": 26,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": false,
+      "bq_rows_staged": 26450,
+      "bq_rows_merged": 190
     }
   ]
 }
