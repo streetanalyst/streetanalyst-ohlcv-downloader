@@ -1,22 +1,12 @@
 {
-  "cursor": 30,
+  "cursor": 55,
   "retry": [
-    "EBAY"
+    "HAE"
   ],
   "cycle": 4,
-  "last_run_utc": "2026-11-05T21:32:57Z",
+  "last_run_utc": "2026-11-06T21:01:49Z",
   "full_refused_utc": "2026-11-05T21:32:57Z",
   "history": [
-    {
-      "run_utc": "2026-10-07T16:22:59Z",
-      "landed": 25,
-      "failed": 1,
-      "api_calls": 27,
-      "stop_reason": "daily_limit",
-      "outputsize": "compact",
-      "full_fallback": true,
-      "bq_error": "BigQuery step failed; state rebuilt manually from run_log.csv"
-    },
     {
       "run_utc": "2026-10-08T20:47:57Z",
       "landed": 25,
@@ -335,6 +325,17 @@
       "full_fallback": true,
       "bq_rows_staged": 26648,
       "bq_rows_merged": 209
+    },
+    {
+      "run_utc": "2026-11-06T21:01:49Z",
+      "landed": 25,
+      "failed": 1,
+      "api_calls": 26,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": false,
+      "bq_rows_staged": 26821,
+      "bq_rows_merged": 185
     }
   ]
 }
