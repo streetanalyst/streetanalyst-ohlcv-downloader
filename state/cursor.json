@@ -1,23 +1,12 @@
 {
-  "cursor": 55,
+  "cursor": 80,
   "retry": [
-    "HAE"
+    "UAL"
   ],
   "cycle": 4,
-  "last_run_utc": "2026-11-06T21:01:49Z",
+  "last_run_utc": "2026-11-07T19:35:25Z",
   "full_refused_utc": "2026-11-05T21:32:57Z",
   "history": [
-    {
-      "run_utc": "2026-10-08T20:47:57Z",
-      "landed": 25,
-      "failed": 1,
-      "api_calls": 26,
-      "stop_reason": "daily_limit",
-      "outputsize": "compact",
-      "full_fallback": false,
-      "bq_rows_staged": 5000,
-      "bq_rows_merged": 2404
-    },
     {
       "run_utc": "2026-10-09T20:18:32Z",
       "landed": 25,
@@ -336,6 +325,17 @@
       "full_fallback": false,
       "bq_rows_staged": 26821,
       "bq_rows_merged": 185
+    },
+    {
+      "run_utc": "2026-11-07T19:35:25Z",
+      "landed": 25,
+      "failed": 1,
+      "api_calls": 26,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": false,
+      "bq_rows_staged": 26981,
+      "bq_rows_merged": 184
     }
   ]
 }
