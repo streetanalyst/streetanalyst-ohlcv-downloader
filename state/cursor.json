@@ -1,23 +1,12 @@
 {
-  "cursor": 80,
+  "cursor": 105,
   "retry": [
-    "UAL"
+    "GNRC"
   ],
   "cycle": 4,
-  "last_run_utc": "2026-11-07T19:35:25Z",
+  "last_run_utc": "2026-11-08T19:55:30Z",
   "full_refused_utc": "2026-11-05T21:32:57Z",
   "history": [
-    {
-      "run_utc": "2026-10-09T20:18:32Z",
-      "landed": 25,
-      "failed": 1,
-      "api_calls": 26,
-      "stop_reason": "daily_limit",
-      "outputsize": "compact",
-      "full_fallback": false,
-      "bq_rows_staged": 7476,
-      "bq_rows_merged": 2191
-    },
     {
       "run_utc": "2026-10-10T19:29:24Z",
       "landed": 8,
@@ -336,6 +325,17 @@
       "full_fallback": false,
       "bq_rows_staged": 26981,
       "bq_rows_merged": 184
+    },
+    {
+      "run_utc": "2026-11-08T19:55:30Z",
+      "landed": 25,
+      "failed": 1,
+      "api_calls": 26,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": false,
+      "bq_rows_staged": 29387,
+      "bq_rows_merged": 2407
     }
   ]
 }
