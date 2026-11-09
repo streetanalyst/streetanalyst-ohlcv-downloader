@@ -1,23 +1,12 @@
 {
-  "cursor": 105,
+  "cursor": 130,
   "retry": [
-    "GNRC"
+    "WGO"
   ],
   "cycle": 4,
-  "last_run_utc": "2026-11-08T19:55:30Z",
+  "last_run_utc": "2026-11-09T23:50:38Z",
   "full_refused_utc": "2026-11-05T21:32:57Z",
   "history": [
-    {
-      "run_utc": "2026-10-10T19:29:24Z",
-      "landed": 8,
-      "failed": 1,
-      "api_calls": 9,
-      "stop_reason": "daily_limit",
-      "outputsize": "compact",
-      "full_fallback": false,
-      "bq_rows_staged": 8276,
-      "bq_rows_merged": 705
-    },
     {
       "run_utc": "2026-10-11T19:41:18Z",
       "landed": 25,
@@ -336,6 +325,17 @@
       "full_fallback": false,
       "bq_rows_staged": 29387,
       "bq_rows_merged": 2407
+    },
+    {
+      "run_utc": "2026-11-09T23:50:38Z",
+      "landed": 25,
+      "failed": 1,
+      "api_calls": 26,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": false,
+      "bq_rows_staged": 31887,
+      "bq_rows_merged": 2500
     }
   ]
 }
