@@ -1,23 +1,12 @@
 {
-  "cursor": 205,
+  "cursor": 230,
   "retry": [
-    "CNC"
+    "UPS"
   ],
   "cycle": 4,
-  "last_run_utc": "2026-11-12T21:54:13Z",
+  "last_run_utc": "2026-11-13T21:34:52Z",
   "full_refused_utc": "2026-11-12T21:54:13Z",
   "history": [
-    {
-      "run_utc": "2026-10-14T19:39:24Z",
-      "landed": 25,
-      "failed": 1,
-      "api_calls": 27,
-      "stop_reason": "daily_limit",
-      "outputsize": "compact",
-      "full_fallback": true,
-      "bq_rows_staged": 17876,
-      "bq_rows_merged": 2500
-    },
     {
       "run_utc": "2026-10-15T19:21:37Z",
       "landed": 23,
@@ -336,6 +325,17 @@
       "full_fallback": true,
       "bq_rows_staged": 32679,
       "bq_rows_merged": 225
+    },
+    {
+      "run_utc": "2026-11-13T21:34:52Z",
+      "landed": 25,
+      "failed": 1,
+      "api_calls": 26,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": false,
+      "bq_rows_staged": 32911,
+      "bq_rows_merged": 247
     }
   ]
 }
