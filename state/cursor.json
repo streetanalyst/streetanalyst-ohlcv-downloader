@@ -1,23 +1,12 @@
 {
-  "cursor": 230,
+  "cursor": 245,
   "retry": [
-    "UPS"
+    "YUM"
   ],
   "cycle": 4,
-  "last_run_utc": "2026-11-13T21:34:52Z",
+  "last_run_utc": "2026-11-14T20:03:23Z",
   "full_refused_utc": "2026-11-12T21:54:13Z",
   "history": [
-    {
-      "run_utc": "2026-10-15T19:21:37Z",
-      "landed": 23,
-      "failed": 1,
-      "api_calls": 24,
-      "stop_reason": "daily_limit",
-      "outputsize": "compact",
-      "full_fallback": false,
-      "bq_rows_staged": 20176,
-      "bq_rows_merged": 2207
-    },
     {
       "run_utc": "2026-10-16T18:59:08Z",
       "landed": 25,
@@ -336,6 +325,17 @@
       "full_fallback": false,
       "bq_rows_staged": 32911,
       "bq_rows_merged": 247
+    },
+    {
+      "run_utc": "2026-11-14T20:03:23Z",
+      "landed": 15,
+      "failed": 1,
+      "api_calls": 16,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": false,
+      "bq_rows_staged": 33047,
+      "bq_rows_merged": 144
     }
   ]
 }
