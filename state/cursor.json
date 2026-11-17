@@ -1,23 +1,12 @@
 {
-  "cursor": 11,
+  "cursor": 36,
   "retry": [
-    "PSX"
+    "AME"
   ],
   "cycle": 5,
-  "last_run_utc": "2026-11-16T23:49:37Z",
+  "last_run_utc": "2026-11-17T23:07:07Z",
   "full_refused_utc": "2026-11-12T21:54:13Z",
   "history": [
-    {
-      "run_utc": "2026-10-18T18:15:47Z",
-      "landed": 25,
-      "failed": 1,
-      "api_calls": 26,
-      "stop_reason": "daily_limit",
-      "outputsize": "compact",
-      "full_fallback": false,
-      "bq_rows_staged": 23590,
-      "bq_rows_merged": 178
-    },
     {
       "run_utc": "2026-10-19T20:41:41Z",
       "landed": 25,
@@ -336,6 +325,17 @@
       "full_fallback": false,
       "bq_rows_staged": 33464,
       "bq_rows_merged": 219
+    },
+    {
+      "run_utc": "2026-11-17T23:07:07Z",
+      "landed": 25,
+      "failed": 1,
+      "api_calls": 26,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": false,
+      "bq_rows_staged": 33663,
+      "bq_rows_merged": 218
     }
   ]
 }
