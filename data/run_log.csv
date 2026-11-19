@@ -1,12 +1,2 @@
 run_utc,symbol,status,rows,first_date,last_date,outputsize,detail
-2026-11-18T22:41:01Z,AME,OK,100,2026-06-30,2026-11-18,compact,
-2026-11-18T22:41:01Z,BAC,OK,100,2026-06-30,2026-11-18,compact,
-2026-11-18T22:41:01Z,LOCO,OK,100,2026-06-30,2026-11-18,compact,
-2026-11-18T22:41:01Z,CAKE,OK,100,2026-06-30,2026-11-18,compact,
-2026-11-18T22:41:01Z,TGT,OK,100,2026-06-30,2026-11-18,compact,
-2026-11-18T22:41:01Z,XNCR,OK,100,2026-06-30,2026-11-18,compact,
-2026-11-18T22:41:01Z,DG,OK,100,2026-06-30,2026-11-18,compact,
-2026-11-18T22:41:01Z,OHI,OK,100,2026-06-30,2026-11-18,compact,
-2026-11-18T22:41:01Z,WFC,OK,100,2026-06-30,2026-11-18,compact,
-2026-11-18T22:41:01Z,JCI,OK,100,2026-06-30,2026-11-18,compact,
-2026-11-18T22:41:01Z,BKH,LIMIT,0,,,compact,Invalid API call. Please retry or visit the documentation (https://www.alphavantage.co/documentation/) for TIME_SERIES_DAILY.
+2026-11-19T22:44:57Z,BKH,LIMIT,0,,,compact,Invalid API call. Please retry or visit the documentation (https://www.alphavantage.co/documentation/) for TIME_SERIES_DAILY.
