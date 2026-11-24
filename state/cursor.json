@@ -4,20 +4,9 @@
     "BKH"
   ],
   "cycle": 5,
-  "last_run_utc": "2026-11-22T21:12:57Z",
+  "last_run_utc": "2026-11-24T02:32:31Z",
   "full_refused_utc": "2026-11-19T22:44:57Z",
   "history": [
-    {
-      "run_utc": "2026-10-24T18:20:34Z",
-      "landed": 25,
-      "failed": 1,
-      "api_calls": 26,
-      "stop_reason": "daily_limit",
-      "outputsize": "compact",
-      "full_fallback": false,
-      "bq_rows_staged": 24602,
-      "bq_rows_merged": 183
-    },
     {
       "run_utc": "2026-10-25T18:32:22Z",
       "landed": 25,
@@ -328,6 +317,17 @@
     },
     {
       "run_utc": "2026-11-22T21:12:57Z",
+      "landed": 0,
+      "failed": 1,
+      "api_calls": 1,
+      "stop_reason": "daily_limit",
+      "outputsize": "compact",
+      "full_fallback": false,
+      "bq_rows_staged": 33753,
+      "bq_rows_merged": 0
+    },
+    {
+      "run_utc": "2026-11-24T02:32:31Z",
       "landed": 0,
       "failed": 1,
       "api_calls": 1,
