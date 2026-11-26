@@ -1,4 +1,4 @@
-2026-11-25T23:46:11Z
+2026-11-26T23:58:43Z
 daily_ohlcv: {'rows_total': 35163, 'symbols': 298, 'min_date': datetime.date(2026, 5, 12), 'max_date': datetime.date(2026, 11, 18)}
 duplicates (symbol,trade_date): 0
 coverage BEHIND: 274
