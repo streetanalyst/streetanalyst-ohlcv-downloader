@@ -1,2 +1,2 @@
 run_utc,symbol,status,rows,first_date,last_date,outputsize,detail
-2026-11-26T23:58:43Z,BKH,LIMIT,0,,,compact,Invalid API call. Please retry or visit the documentation (https://www.alphavantage.co/documentation/) for TIME_SERIES_DAILY.
+2026-11-27T23:41:43Z,BKH,LIMIT,0,,,compact,Invalid API call. Please retry or visit the documentation (https://www.alphavantage.co/documentation/) for TIME_SERIES_DAILY.
